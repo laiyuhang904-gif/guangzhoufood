@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广州美食地图 | 食在广州</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f5e6 0%, #fff9e6 100%);
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 头部样式 */
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 40px;
+        }
+        
+        .header-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header-content p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        /* 美食分类 */
+        .food-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .category-icon {
+            background: #d32f2f;
+            color: white;
+            font-size: 2.5rem;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .category-content {
+            padding: 25px;
+        }
+        
+        .category-content h3 {
+            color: #d32f2f;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .category-content ul {
+            list-style: none;
+        }
+        
+        .category-content li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            color: #666;
+        }
+        
+        .category-content li:last-child {
+            border-bottom: none;
+        }
+        
+        /* 互动区域 */
+        .interaction-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 60px 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ffeaa7;
+        }
+        
+        .interaction-title {
+            color: #d32f2f;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .interaction-title::before {
+            content: "💬";
+        }
+        
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .chat-box {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .message {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .user-message {
+            background: #e3f2fd;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .system-message {
+            background: #fff8e1;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #d32f2f;
+            font-size: 0.9rem;
+        }
+        
+        .message-time {
+            font-size: 0.8rem;
+            color: #888;
+            float: right;
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 15px;
+        }
+        
+        #messageInput {
+            flex: 1;
+            padding: 18px 25px;
+            border: 2px solid #ffeaa7;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        #messageInput:focus {
+            border-color: #d32f2f;
+        }
+        
+        #sendButton {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+            border: none;
+            padding: 0 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        #sendButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+        }
+        
+        /* 美食推荐 */
+        .recommendations {
+            margin: 60px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: #d32f2f;
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+        
+        .restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .restaurant-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .restaurant-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .restaurant-info {
+            padding: 25px;
+        }
+        
+        .restaurant-info h3 {
+            color: #d32f2f;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .restaurant-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .tag {
+            background: #fff3e0;
+            color: #e65100;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+            color: #666;
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .interaction-section {
+                padding: 25px;
+            }
+            
+            .input-area {
+                flex-direction: column;
+            }
+            
+            #sendButton {
+                padding: 15px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域 -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1>食在广州 • 美食之都</h1>
+                <p>品味岭南饮食文化，探索广府美食精髓。从早茶点心到夜市小吃，广州用味道讲述千年商都的故事。</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 美食分类介绍 -->
+        <div class="food-categories">
+            <div class="category-card">
+                <div class="category-icon">🥟</div>
+                <div class="category-content">
+                    <h3>广式早茶</h3>
+                    <ul>
+                        <li>虾饺 • 晶莹剔透，鲜嫩多汁</li>
+                        <li>烧卖 • 猪肉鲜虾，爽口弹牙</li>
+                        <li>凤爪 • 酱香浓郁，入口即化</li>
+                        <li>肠粉 • 米香浓郁，滑嫩爽口</li>
+                        <li>叉烧包 • 甜咸适口，松软香甜</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">🍲</div>
+                <div class="category-content">
+                    <h3>经典粤菜</h3>
+                    <ul>
+                        <li>白切鸡 • 皮爽肉滑，原汁原味</li>
+                        <li>烧鹅 • 皮脆肉嫩，肥而不腻</li>
+                        <li>清蒸鱼 • 鲜美嫩滑，清淡健康</li>
+                        <li>老火靓汤 • 滋补养生，火候十足</li>
+                        <li>煲仔饭 • 饭焦香脆，配料丰富</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">🍢</div>
+                <div class="category-content">
+                    <h3>街头小吃</h3>
+                    <ul>
+                        <li>牛杂 • 浓郁酱香，软烂入味</li>
+                        <li>鱼蛋 • 弹牙爽口，咖喱香浓</li>
+                        <li>砵仔糕 • 香甜软糯，传统风味</li>
+                        <li>双皮奶 • 奶香浓郁，滑嫩细腻</li>
+                        <li>糖水 • 杨枝甘露，红豆沙等</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 互动区域 -->
+        <section class="interaction-section">
+            <h2 class="interaction-title">广州美食大家谈</h2>
+            <div class="chat-container">
+                <div class="chat-box" id="chatBox">
+                    <!-- 系统欢迎消息 -->
+                    <div class="message system-message">
+                        <div class="message-header">系统提示</div>
+                        <div class="message-content">欢迎来到广州美食社区！和大家分享你最喜欢的广州美食吧～</div>
+                        <div class="message-time">刚刚</div>
+                    </div>
+                    
+                    <!-- 示例消息 -->
+                    <div class="message user-message">
+                        <div class="message-header">美食爱好者</div>
+                        <div class="message-content">我最爱早茶的虾饺，每次去广州必点！</div>
+                        <div class="message-time">2分钟前</div>
+                    </div>
+                    
+                    <div class="message system-message">
+                        <div class="message-header">老广推荐</div>
+                        <div class="message-content">推荐大家试试陈添记的鱼皮，爽脆可口！</div>
+                        <div class="message-time">5分钟前</div>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <input type="text" id="messageInput" placeholder="你最喜欢的广州美食是什么？分享给大家吧！">
+                    <button id="sendButton">发送</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 餐厅推荐 -->
+        <section class="recommendations">
+            <h2 class="section-title">地道美食推荐</h2>
+            <div class="restaurants-grid">
+                <div class="restaurant-card">
+                    <img src="taotaoju.jpg" alt="陶陶居" class="restaurant-img">
+                    <div class="restaurant-info">
+                        <h3>陶陶居</h3>
+                        <p>百年老字号，早茶点心正宗，环境典雅，是体验广式早茶文化的首选。</p>
+                        <div class="restaurant-tags">
+                            <span class="tag">早茶</span>
+                            <span class="tag">老字号</span>
+                            <span class="tag">点心</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="restaurant-card">
+                    <img src="bingshengpinwei.jpg" alt="炳胜品味" class="restaurant-img">
+                    <div class="restaurant-info">
+                        <h3>炳胜品味</h3>
+                        <p>以创新粤菜闻名，脆皮叉烧和豉油皇鹅肠是招牌菜，适合宴请和家庭聚餐。</p>
+                        <div class="restaurant-tags">
+                            <span class="tag">粤菜</span>
+                            <span class="tag">创新</span>
+                            <span class="tag">宴请</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="restaurant-card">
+                    <img src="yinjichangfen.jpg" alt="银记肠粉" class="restaurant-img">
+                    <div class="restaurant-info">
+                        <h3>银记肠粉</h3>
+                        <p>肠粉专门店，米浆现磨现蒸，肠粉薄如蝉翼，馅料丰富，酱汁独特。</p>
+                        <div class="restaurant-tags">
+                            <span class="tag">肠粉</span>
+                            <span class="tag">小吃</span>
+                            <span class="tag">地道</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2024 广州美食地图 | 品味岭南，食在广州</p>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: #999;">
+                本网站用于展示广州美食文化，图片来自Unsplash
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 聊天功能实现
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatBox = document.getElementById('chatBox');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            
+            // 从本地存储加载历史消息
+            let messages = JSON.parse(localStorage.getItem('guangzhouFoodMessages')) || [];
+            
+            // 如果本地存储没有消息，添加示例消息
+            if (messages.length === 0) {
+                messages = [
+                    {
+                        type: 'system',
+                        username: '系统提示',
+                        content: '欢迎来到广州美食社区！和大家分享你最喜欢的广州美食吧～',
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    },
+                    {
+                        type: 'user',
+                        username: '美食爱好者',
+                        content: '我最爱早茶的虾饺，每次去广州必点！',
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    },
+                    {
+                        type: 'system',
+                        username: '老广推荐',
+                        content: '推荐大家试试陈添记的鱼皮，爽脆可口！',
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    }
+                ];
+                saveMessages();
+            }
+            
+            // 显示所有消息
+            renderMessages();
+            
+            // 发送消息函数
+            function sendMessage() {
+                const content = messageInput.value.trim();
+                
+                if (content === '') {
+                    messageInput.focus();
+                    return;
+                }
+                
+                // 创建新消息
+                const newMessage = {
+                    type: 'user',
+                    username: '访客' + Math.floor(Math.random() * 1000), // 随机生成访客编号
+                    content: content,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                };
+                
+                // 添加到消息数组
+                messages.push(newMessage);
+                
+                // 保存到本地存储
+                saveMessages();
+                
+                // 清空输入框
+                messageInput.value = '';
+                
+                // 重新渲染消息
+                renderMessages();
+                
+                // 滚动到最新消息
+                scrollToBottom();
+                
+                // 可选：添加自动回复
+                setTimeout(() => {
+                    addAutoReply(content);
+                }, 1000);
+            }
+            
+            // 保存消息到本地存储
+            function saveMessages() {
+                // 限制保存最近50条消息
+                if (messages.length > 50) {
+                    messages = messages.slice(-50);
+                }
+                localStorage.setItem('guangzhouFoodMessages', JSON.stringify(messages));
+            }
+            
+            // 渲染所有消息
+            function renderMessages() {
+                chatBox.innerHTML = '';
+                
+                messages.forEach(msg => {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = `message ${msg.type === 'user' ? 'user-message' : 'system-message'}`;
+                    
+                    messageElement.innerHTML = `
+                        <div class="message-header">${msg.username}</div>
+                        <div class="message-content">${msg.content}</div>
+                        <div class="message-time">${msg.time}</div>
+                    `;
+                    
+                    chatBox.appendChild(messageElement);
+                });
+                
+                scrollToBottom();
+            }
+            
+            // 滚动到底部
+            function scrollToBottom() {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            
+            // 自动回复函数
+            function addAutoReply(userMessage) {
+                const replies = [
+                    "听起来很棒！我也很喜欢这道菜。",
+                    "感谢分享！广州美食真是数不胜数。",
+                    "这个选择不错！广州的饮食文化真的很丰富。",
+                    "下次去广州我一定要试试这个！",
+                    "这道菜确实是广州的代表美食之一。"
+                ];
+                
+                // 根据关键词给出特定回复
+                const lowerMsg = userMessage.toLowerCase();
+                let specificReply = '';
+                
+                if (lowerMsg.includes('虾饺') || lowerMsg.includes('早茶')) {
+                    specificReply = "虾饺确实是广式早茶的经典！晶莹剔透的外皮包裹着鲜美的虾肉，想想都流口水。";
+                } else if (lowerMsg.includes('烧鹅') || lowerMsg.includes('烧腊')) {
+                    specificReply = "烧鹅的脆皮和嫩肉搭配梅子酱，真是绝配！";
+                } else if (lowerMsg.includes('肠粉')) {
+                    specificReply = "肠粉的米香和滑嫩口感，加上特制酱油，是广州早餐的绝佳选择。";
+                } else if (lowerMsg.includes('糖水')) {
+                    specificReply = "广州的糖水种类繁多，杨枝甘露、双皮奶、红豆沙都值得一试！";
+                } else if (lowerMsg.includes('牛杂')) {
+                    specificReply = "街头牛杂配萝卜，浓郁的酱汁让人回味无穷！";
+                }
+                
+                // 选择回复
+                const replyContent = specificReply || replies[Math.floor(Math.random() * replies.length)];
+                
+                const autoReply = {
+                    type: 'system',
+                    username: '美食小助手',
+                    content: replyContent,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                };
+                
+                messages.push(autoReply);
+                saveMessages();
+                renderMessages();
+            }
+            
+            // 发送按钮点击事件
+            sendButton.addEventListener('click', sendMessage);
+            
+            // 输入框回车事件
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // 页面加载时滚动到底部
+            scrollToBottom();
+            
+            // 清空聊天记录功能（调试用）
+            window.clearChat = function() {
+                if (confirm('确定要清空所有聊天记录吗？')) {
+                    localStorage.removeItem('guangzhouFoodMessages');
+                    messages = [];
+                    renderMessages();
+                }
+            };
+            
+            // 导出聊天记录功能
+            window.exportChat = function() {
+                const chatText = messages.map(msg => 
+                    `[${msg.time}] ${msg.username}: ${msg.content}`
+                ).join('\n');
+                
+                const blob = new Blob([chatText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '广州美食聊天记录.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('聊天记录已导出为文本文件！');
+            };
+        });
+    </script>
+</body>
+</html>
